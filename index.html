@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0e1218">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Revisão">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/img/icone.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/icone-180.png">
+  <title>Revisão para Provas</title>
+  <link rel="stylesheet" href="assets/css/estilo.css">
+</head>
+<body class="pagina-inicial">
+  <main class="inicio">
+    <header class="inicio-cabecalho">
+      <p class="sobretitulo">Ciência da Computação</p>
+      <h1>Revisão para Provas</h1>
+      <p class="subtitulo">Conteúdo organizado por disciplina a partir dos materiais de aula, com revisão por tópicos e atividades resolvidas.</p>
+    </header>
+    <section id="cards" class="cards" aria-label="Disciplinas"></section>
+  </main>
+  <script src="assets/js/disciplinas.js"></script>
+  <script>
+    (function () {
+      var box = document.getElementById("cards");
+      window.ORDEM_DISCIPLINAS.forEach(function (s) {
+        var d = window.DISCIPLINAS[s];
+        var card = document.createElement("article");
+        card.className = "card";
+        card.setAttribute("data-disciplina", s);
+        card.innerHTML =
+          '<div class="card-faixa"></div>' +
+          '<h2><a href="revisao.html?d=' + s + '">' + d.nome + '</a></h2>' +
+          '<p>' + d.descricao + '</p>' +
+          '<div class="card-acoes">' +
+          '<a class="botao" href="revisao.html?d=' + s + '">Acessar revisão</a>' +
+          '<a class="botao secundario" href="atividades.html?d=' + s + '">Atividades resolvidas</a>' +
+          '</div>';
+        box.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>
