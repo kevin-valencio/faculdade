@@ -152,7 +152,7 @@
 
   function carregarConteudo(arquivo) {
     var s = document.createElement("script");
-    s.src = "conteudo/" + sigla + "/" + arquivo + ".js";
+    s.src = "conteudo/" + sigla + "/" + arquivo + ".js?v=" + (window.VERSAO || "");
     s.onerror = function () {
       aviso("Conteúdo não encontrado",
         "O arquivo <code>conteudo/" + esc(sigla) + "/" + esc(arquivo) + ".js</code> ainda não foi gravado.");

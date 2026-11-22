@@ -20,3 +20,6 @@ window.DISCIPLINAS = {
   }
 };
 window.ORDEM_DISCIPLINAS = ["fia", "ps", "sdm"];
+
+/* Versão usada para forçar o navegador a baixar arquivos novos após cada atualização. */
+window.VERSAO = "20261122-2";
