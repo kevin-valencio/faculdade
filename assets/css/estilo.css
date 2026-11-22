@@ -304,3 +304,16 @@ html { -webkit-tap-highlight-color: transparent; }
 /* itens de enunciado (a), b)... / I, II... / 1, 2...) em linhas separadas */
 .enunciado ul.itens { list-style: none; padding-left: 0; margin: 0 0 12px; display: grid; gap: 4px; }
 .enunciado ul.itens li { padding: 6px 10px; border-left: 2px solid var(--border-forte); background: rgba(255, 255, 255, 0.02); border-radius: 0 6px 6px 0; margin: 0; }
+
+/* correção: no celular o índice (gaveta) precisa de altura fixa para rolar.
+   Como item de grid com align-self:start, ele crescia até o tamanho do conteúdo. */
+@media (max-width: 1000px) {
+  .indice {
+    align-self: stretch;
+    height: calc(100vh - var(--nav-h));
+    height: calc(100dvh - var(--nav-h));
+    max-height: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+}
