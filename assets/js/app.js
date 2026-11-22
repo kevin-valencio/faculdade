@@ -56,8 +56,52 @@
       var w = el("div", { class: "tabela-rolagem" });
       t.parentNode.insertBefore(w, t);
       w.appendChild(t);
+      prepararCards(t, w);
     });
   }
+
+  /* No celular, tabelas viram cards (CSS em .tabela-rolagem.cards). Cada célula recebe o
+     nome da coluna em data-rotulo. Tabelas só com valores curtos (ex.: tabela-verdade)
+     continuam como tabela, porque cabem na tela e ficam mais legíveis assim. */
+  function prepararCards(t, w) {
+    var linhas = Array.prototype.slice.call(t.rows);
+    if (!linhas.length) return;
+    var cab = t.tHead && t.tHead.rows.length ? t.tHead.rows[t.tHead.rows.length - 1] : null;
+    if (!cab && Array.prototype.every.call(linhas[0].cells, function (c) { return c.tagName === "TH"; })) {
+      cab = linhas[0];
+      cab.classList.add("linha-cab");
+    }
+    var rotulos = [];
+    if (cab) {
+      Array.prototype.forEach.call(cab.cells, function (c) {
+        for (var k = 0; k < (c.colSpan || 1); k++) rotulos.push(c.textContent.trim());
+      });
+    }
+    var curta = true;
+    linhas.forEach(function (tr) {
+      if (tr === cab || (t.tHead && t.tHead.contains(tr))) return;
+      var col = 0;
+      Array.prototype.forEach.call(tr.cells, function (c) {
+        c.setAttribute("data-rotulo", rotulos[col] || "");
+        col += c.colSpan || 1;
+        if (c.textContent.trim().length > 6) curta = false;
+      });
+    });
+    w.classList.add(curta ? "curta" : "cards");
+  }
+
+  /* Tabela curta que mesmo assim não cabe na largura do celular vira card compacto. */
+  function ajustarTabelasCurtas() {
+    document.querySelectorAll(".tabela-rolagem.curta").forEach(function (w) {
+      w.classList.remove("cards");
+      if (window.innerWidth <= 680 && w.scrollWidth > w.clientWidth + 1) w.classList.add("cards");
+    });
+  }
+  var tempoTabelas;
+  window.addEventListener("resize", function () {
+    clearTimeout(tempoTabelas);
+    tempoTabelas = setTimeout(ajustarTabelasCurtas, 150);
+  });
 
 
   /* Quebra itens escritos em sequência num mesmo parágrafo (a) b) c), I. II. III., (1) (2), 1. 2.)
@@ -268,6 +312,7 @@
       }).join("") + "</ul>";
 
     realcarConteudo(main);
+    ajustarTabelasCurtas();
     ativarScrollspy("#visao-geral, .modulo, .topico");
     if (location.hash) { var alvo = document.getElementById(location.hash.slice(1)); if (alvo) alvo.scrollIntoView(); }
   };
@@ -351,6 +396,7 @@
       }).join("") + "</ul>";
 
     realcarConteudo(main);
+    ajustarTabelasCurtas();
     ativarScrollspy("#visao-geral, .modulo");
     if (location.hash) { var alvo = document.getElementById(location.hash.slice(1)); if (alvo) alvo.scrollIntoView(); }
   };

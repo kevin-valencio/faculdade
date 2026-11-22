@@ -317,3 +317,42 @@ html { -webkit-tap-highlight-color: transparent; }
     touch-action: pan-y;
   }
 }
+
+/* ---------- celular: tabelas como cards ---------- */
+@media (max-width: 680px) {
+  .tabela-rolagem.cards { border: 0; border-radius: 0; overflow: visible; }
+  .tabela-rolagem.cards table,
+  .tabela-rolagem.cards tbody,
+  .tabela-rolagem.cards tr,
+  .tabela-rolagem.cards th,
+  .tabela-rolagem.cards td { display: block; width: 100%; }
+  .tabela-rolagem.cards thead,
+  .tabela-rolagem.cards tr.linha-cab { display: none; }
+  .tabela-rolagem.cards tr {
+    background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 8px 12px; margin-bottom: 10px;
+  }
+  .tabela-rolagem.cards tr:last-child { margin-bottom: 0; }
+  .tabela-rolagem.cards td,
+  .tabela-rolagem.cards th { border: 0; padding: 5px 0; background: none !important; white-space: normal; min-width: 0; font-size: 0.92rem; }
+  .tabela-rolagem.cards td::before,
+  .tabela-rolagem.cards th::before {
+    content: attr(data-rotulo); display: block; margin-bottom: 1px;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+  }
+  .tabela-rolagem.cards [data-rotulo=""]::before { display: none; }
+  .tabela-rolagem.cards tr > :first-child {
+    color: var(--heading); font-weight: 600; font-size: 0.98rem;
+    padding-bottom: 7px; margin-bottom: 3px; border-bottom: 1px solid var(--border);
+  }
+  .tabela-rolagem.cards.curta tr > :first-child::before { display: none; }
+  .tabela-rolagem.cards tr > :only-child { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
+}
+@media (max-width: 680px) {
+  /* card compacto para tabelas de valores curtos que não cabem na tela */
+  .tabela-rolagem.cards.curta tr > :not(:first-child) {
+    display: inline-block; width: auto; min-width: 52px; margin: 0 6px 4px 0; padding: 4px 8px;
+    border: 1px solid var(--border); border-radius: 6px; text-align: center;
+  }
+  .tabela-rolagem.cards.curta tr > :not(:first-child)::before { margin-bottom: 0; }
+}
