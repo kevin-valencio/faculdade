@@ -300,3 +300,7 @@ html { -webkit-tap-highlight-color: transparent; }
 /* cards do menu: dois botões lado a lado */
 .card-acoes { flex-wrap: nowrap; }
 .card-acoes .botao { flex: 1 1 0; min-width: 0; }
+
+/* itens de enunciado (a), b)... / I, II... / 1, 2...) em linhas separadas */
+.enunciado ul.itens { list-style: none; padding-left: 0; margin: 0 0 12px; display: grid; gap: 4px; }
+.enunciado ul.itens li { padding: 6px 10px; border-left: 2px solid var(--border-forte); background: rgba(255, 255, 255, 0.02); border-radius: 0 6px 6px 0; margin: 0; }

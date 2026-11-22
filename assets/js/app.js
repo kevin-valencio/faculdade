@@ -59,6 +59,51 @@
     });
   }
 
+
+  /* Quebra itens escritos em sequência num mesmo parágrafo (a) b) c), I. II. III., (1) (2), 1. 2.)
+     em linhas separadas. Se a questão já tem lista de alternativas, remove a cópia corrida
+     das alternativas a) b) c) do enunciado. */
+  var ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  var FAMILIAS = [
+    { re: /(^|[\s>;:.?!])([a-j])\)\s/g, valor: function (m) { return LETRAS.indexOf(m); }, letras: true },
+    { re: /(^|[\s>;:.?!])(XII|XI|X|IX|VIII|VII|VI|V|IV|III|II|I)[.)]\s/g, valor: function (m) { return ROMANOS.indexOf(m); } },
+    { re: /(^|[\s>;:.?!])\((\d{1,2})\)\s/g, valor: function (m) { return parseInt(m, 10) - 1; } },
+    { re: /(^|[\s>;:?!])(\d{1,2})\.\s/g, valor: function (m) { return parseInt(m, 10) - 1; } }
+  ];
+  function marcadoresSequenciais(html, fam) {
+    var achados = [], m, esperado = 0;
+    fam.re.lastIndex = 0;
+    while ((m = fam.re.exec(html))) {
+      if (fam.valor(m[2]) === esperado) {
+        achados.push(m.index + m[1].length);
+        esperado++;
+      }
+    }
+    return achados.length >= 2 ? achados : null;
+  }
+  function quebrarItens(raiz, temAlternativas) {
+    raiz.querySelectorAll("p").forEach(function (p) {
+      var html = p.innerHTML;
+      for (var f = 0; f < FAMILIAS.length; f++) {
+        var pos = marcadoresSequenciais(html, FAMILIAS[f]);
+        if (!pos) continue;
+        var intro = html.slice(0, pos[0]).trim();
+        var frag = document.createDocumentFragment();
+        if (intro) frag.appendChild(el("p", null, intro));
+        if (!(FAMILIAS[f].letras && temAlternativas)) {
+          var ul = el("ul", { class: "itens" });
+          pos.forEach(function (ini, k) {
+            var item = html.slice(ini, k + 1 < pos.length ? pos[k + 1] : html.length).trim();
+            ul.appendChild(el("li", null, item));
+          });
+          frag.appendChild(ul);
+        }
+        p.parentNode.replaceChild(frag, p);
+        return;
+      }
+    });
+  }
+
   /* ---------- estrutura comum ---------- */
   var params = new URLSearchParams(location.search);
   var sigla = (params.get("d") || "").toLowerCase();
@@ -287,6 +332,8 @@
         if (q.limitacao) h += '<div class="caixa nota" data-titulo="Limitação"><p>' + q.limitacao + "</p></div>";
         if (q.fonte) h += '<p class="fonte">Fonte: ' + esc(q.fonte) + "</p>";
         art.innerHTML = h;
+        var enun = art.querySelector(".enunciado");
+        if (enun) quebrarItens(enun, !!(q.alternativas && q.alternativas.length));
         sec.appendChild(art);
       });
       main.appendChild(sec);
