@@ -296,3 +296,7 @@ html { -webkit-tap-highlight-color: transparent; }
   .resposta-final { padding: 10px 12px; }
   .voltar-topo { width: 46px; height: 46px; right: max(14px, env(safe-area-inset-right)); bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
+
+/* cards do menu: dois botões lado a lado */
+.card-acoes { flex-wrap: nowrap; }
+.card-acoes .botao { flex: 1 1 0; min-width: 0; }
