@@ -16,10 +16,11 @@ window.DISCIPLINAS = {
     sigla: "sdm",
     nome: "Sistemas Digitais e Microprocessadores",
     nomeCompleto: "Sistemas Digitais e Microprocessadores",
+    reforco: true,
     descricao: "Sistemas de numeração, álgebra booleana e portas lógicas, circuitos combinacionais e sequenciais, arquitetura de microprocessadores e microcontroladores (Arduino)."
   }
 };
 window.ORDEM_DISCIPLINAS = ["fia", "ps", "sdm"];
 
 /* Versão usada para forçar o navegador a baixar arquivos novos após cada atualização. */
-window.VERSAO = "20261122-3";
+window.VERSAO = "20261124-1";

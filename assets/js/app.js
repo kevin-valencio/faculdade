@@ -152,15 +152,20 @@
   var params = new URLSearchParams(location.search);
   var sigla = (params.get("d") || "").toLowerCase();
   var disc = window.DISCIPLINAS[sigla];
-  var pagina = document.body.getAttribute("data-pagina"); // "revisao" | "atividades"
+  var pagina = document.body.getAttribute("data-pagina"); // "revisao" | "topicos" | "atividades" | "reforco"
+  var ARQUIVO_DA_PAGINA = { revisao: "revisao", topicos: "revisao", atividades: "atividades", reforco: "reforco" };
+  var TITULO_DA_PAGINA = { revisao: "Revisão", topicos: "Tópicos", atividades: "Atividades", reforco: "Reforço" };
 
   function montarNavbar() {
     var nav = document.getElementById("navbar");
     var links = "";
     if (disc) {
-      links =
-        '<a class="nav-aba' + (pagina === "revisao" ? " ativa" : "") + '" href="revisao.html?d=' + sigla + '">Revisão</a>' +
-        '<a class="nav-aba' + (pagina === "atividades" ? " ativa" : "") + '" href="atividades.html?d=' + sigla + '">Atividades<span class="longo"> resolvidas</span></a>';
+      var abas = [["revisao", "Revisão"], ["topicos", "Tópicos"], ["atividades", "Atividades"]];
+      if (disc.reforco) abas.push(["reforco", "Reforço"]);
+      links = abas.map(function (a) {
+        return '<a class="nav-aba' + (pagina === a[0] ? " ativa" : "") + '" href="' + a[0] + '.html?d=' + sigla + '"' +
+          (pagina === a[0] ? ' aria-current="page"' : "") + ">" + a[1] + "</a>";
+      }).join("");
     }
     nav.innerHTML =
       '<div class="nav-interno">' +
@@ -235,13 +240,11 @@
     return h;
   }
 
-  /* ---------- página de revisão ---------- */
-  window.registrarRevisao = function (dados) {
-    if (pagina !== "revisao" || !dados) return;
-    var main = document.getElementById("conteudo");
-    var aside = document.getElementById("indice");
+  /* Normaliza módulos e tópicos (ids únicos). Usada pela revisão, pelos tópicos e pelo reforço,
+     para que os links da página Tópicos apontem exatamente para os ids da revisão. */
+  function normalizarModulos(dados) {
     var novoId = idsUnicos();
-    var modulos = (dados.modulos || []).map(function (m, i) {
+    return (dados.modulos || []).map(function (m, i) {
       return {
         id: novoId(m.id, "modulo-" + (i + 1)),
         titulo: m.titulo || "Módulo " + (i + 1),
@@ -251,11 +254,29 @@
         })
       };
     });
+  }
+
+  /* ---------- página de revisão (e tópicos) ---------- */
+  window.registrarRevisao = function (dados) {
+    if (!dados) return;
+    if (pagina === "topicos") return renderTopicos(dados);
+    if (pagina === "revisao") renderAula(dados, "Revisão para a prova");
+  };
+
+  /* ---------- página de reforço ---------- */
+  window.registrarReforco = function (dados) {
+    if (pagina === "reforco" && dados) renderAula(dados, "Reforço");
+  };
+
+  function renderAula(dados, sobretitulo) {
+    var main = document.getElementById("conteudo");
+    var aside = document.getElementById("indice");
+    var modulos = normalizarModulos(dados);
     var todos = [];
     modulos.forEach(function (m) { m.topicos.forEach(function (t) { todos.push({ t: t, m: m }); }); });
 
     main.innerHTML = "";
-    main.appendChild(cabecalho("Revisão para a prova",
+    main.appendChild(cabecalho(sobretitulo,
       '<a class="botao" href="atividades.html?d=' + sigla + '">Ver atividades resolvidas</a>'));
 
     /* visão geral */
@@ -315,7 +336,59 @@
     ajustarTabelasCurtas();
     ativarScrollspy("#visao-geral, .modulo, .topico");
     if (location.hash) { var alvo = document.getElementById(location.hash.slice(1)); if (alvo) alvo.scrollIntoView(); }
-  };
+  }
+
+  /* ---------- página de tópicos: lista do que estudar, gerada da revisão ---------- */
+  function renderTopicos(dados) {
+    var main = document.getElementById("conteudo");
+    var aside = document.getElementById("indice");
+    var modulos = normalizarModulos(dados);
+    var total = modulos.reduce(function (s, m) { return s + m.topicos.length; }, 0);
+    var tmp = document.createElement("div");
+
+    main.innerHTML = "";
+    main.appendChild(cabecalho("Tópicos para estudar",
+      '<a class="botao" href="revisao.html?d=' + sigla + '">Ver revisão</a>'));
+
+    var vg = el("section", { class: "visao-geral", id: "visao-geral" });
+    vg.innerHTML = "<h2>Visão geral</h2><p>" + total + " tópicos em " + modulos.length +
+      (modulos.length === 1 ? " unidade" : " unidades") +
+      ". Cada tópico leva direto ao conteúdo na página de revisão; os subitens são os assuntos tratados dentro dele.</p>";
+    main.appendChild(vg);
+
+    var n = 0;
+    modulos.forEach(function (m) {
+      var sec = el("section", { class: "modulo", id: m.id });
+      sec.appendChild(el("h2", { class: "modulo-titulo" }, esc(m.titulo) +
+        ' <span class="contagem">' + m.topicos.length + (m.topicos.length === 1 ? " tópico" : " tópicos") + "</span>"));
+      var ol = el("ol", { class: "lista-topicos" });
+      m.topicos.forEach(function (t) {
+        n++;
+        tmp.innerHTML = t.html;
+        var subs = Array.prototype.map.call(tmp.querySelectorAll("h4"), function (h) { return h.textContent.trim(); })
+          .filter(function (x) { return x; });
+        var li = el("li", { value: String(n) });
+        li.innerHTML = '<a href="revisao.html?d=' + sigla + "#" + t.id + '">' + esc(t.titulo) + "</a>" +
+          (subs.length ? '<ul class="subtopicos">' + subs.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : "");
+        ol.appendChild(li);
+      });
+      sec.appendChild(ol);
+      main.appendChild(sec);
+    });
+
+    main.appendChild(el("div", { class: "fim-pagina" },
+      '<a class="botao" href="revisao.html?d=' + sigla + '">Ver revisão</a>' +
+      '<a class="botao secundario" href="index.html">Menu principal</a>'));
+
+    aside.innerHTML = '<p class="indice-titulo">Unidades</p><ul class="indice-lista">' +
+      '<li><a href="#visao-geral">Visão geral</a></li>' +
+      modulos.map(function (m) {
+        return '<li class="indice-modulo"><a href="#' + m.id + '">' + esc(m.titulo) +
+          ' <span class="contagem">' + m.topicos.length + "</span></a></li>";
+      }).join("") + "</ul>";
+    ativarScrollspy("#visao-geral, .modulo");
+    if (location.hash) { var alvo = document.getElementById(location.hash.slice(1)); if (alvo) alvo.scrollIntoView(); }
+  }
 
   /* ---------- página de atividades ---------- */
   window.registrarAtividades = function (dados) {
@@ -407,8 +480,12 @@
     aviso("Disciplina não encontrada", "Escolha uma disciplina no menu principal.");
   } else {
     document.body.setAttribute("data-disciplina", sigla);
-    document.title = (pagina === "atividades" ? "Atividades — " : "Revisão — ") + disc.nome;
-    carregarConteudo(pagina === "atividades" ? "atividades" : "revisao");
+    document.title = (TITULO_DA_PAGINA[pagina] || "Revisão") + " — " + disc.nome;
+    if (pagina === "reforco" && !disc.reforco) {
+      aviso("Sem reforço para esta disciplina", "A página de reforço existe apenas para Sistemas Digitais e Microprocessadores.");
+    } else {
+      carregarConteudo(ARQUIVO_DA_PAGINA[pagina] || "revisao");
+    }
   }
 
   /* botão voltar ao topo */

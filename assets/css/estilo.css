@@ -356,3 +356,30 @@ html { -webkit-tap-highlight-color: transparent; }
   }
   .tabela-rolagem.cards.curta tr > :not(:first-child)::before { margin-bottom: 0; }
 }
+
+/* cards do menu: Revisão | Atividades / Tópicos | Reforço */
+.card-acoes { flex-wrap: wrap; }
+.card-acoes .botao { flex: 1 1 calc(50% - 5px); }
+
+/* página Tópicos */
+.lista-topicos { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; counter-reset: none; }
+.lista-topicos > li { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px 10px 46px; position: relative; }
+.lista-topicos > li::before { content: attr(value); position: absolute; left: 12px; top: 10px; width: 24px; text-align: right; color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+.lista-topicos > li > a { color: var(--heading); font-weight: 600; }
+.subtopicos { margin: 6px 0 0; padding-left: 18px; color: var(--text-muted); font-size: 0.9rem; }
+.subtopicos li { margin: 2px 0; }
+.modulo-titulo .contagem { font-weight: 400; margin-left: 6px; }
+
+/* celular: barra em duas linhas (identificação + abas roláveis) */
+@media (max-width: 680px) {
+  :root { --nav-h: 100px; }
+  .nav-interno { flex-wrap: wrap; align-content: center; row-gap: 8px; }
+  .nav-disciplina { display: block; flex: 1; min-width: 0; font-size: 0.95rem; }
+  .nav-abas { order: 3; flex: 1 0 100%; margin-left: 0; overflow-x: auto; scrollbar-width: none; gap: 4px; }
+  .nav-abas::-webkit-scrollbar { display: none; }
+  .nav-aba { flex: 1 0 auto; text-align: center; padding: 7px 10px; font-size: 0.88rem; }
+}
+@media (max-width: 680px) {
+  /* em card compacto, células vazias (ex.: diagrama de pipeline) não aparecem */
+  .tabela-rolagem.cards.curta td:empty { display: none; }
+}
