@@ -152,9 +152,9 @@
   var params = new URLSearchParams(location.search);
   var sigla = (params.get("d") || "").toLowerCase();
   var disc = window.DISCIPLINAS[sigla];
-  var pagina = document.body.getAttribute("data-pagina"); // "revisao" | "topicos" | "atividades" | "reforco"
-  var ARQUIVO_DA_PAGINA = { revisao: "revisao", topicos: "revisao", atividades: "atividades", reforco: "reforco" };
-  var TITULO_DA_PAGINA = { revisao: "Revisão", topicos: "Tópicos", atividades: "Atividades", reforco: "Reforço" };
+  var pagina = document.body.getAttribute("data-pagina"); // "revisao" | "topicos" | "atividades" | "reforco" | "resumo"
+  var ARQUIVO_DA_PAGINA = { revisao: "revisao", topicos: "revisao", atividades: "atividades", reforco: "reforco", resumo: "resumo" };
+  var TITULO_DA_PAGINA = { revisao: "Revisão", topicos: "Tópicos", atividades: "Atividades", reforco: "Reforço", resumo: "Resumo" };
 
   function montarNavbar() {
     var nav = document.getElementById("navbar");
@@ -162,6 +162,7 @@
     if (disc) {
       var abas = [["revisao", "Revisão"], ["topicos", "Tópicos"], ["atividades", "Atividades"]];
       if (disc.reforco) abas.push(["reforco", "Reforço"]);
+      if (disc.resumo) abas.push(["resumo", "Resumo"]);
       links = abas.map(function (a) {
         return '<a class="nav-aba' + (pagina === a[0] ? " ativa" : "") + '" href="' + a[0] + '.html?d=' + sigla + '"' +
           (pagina === a[0] ? ' aria-current="page"' : "") + ">" + a[1] + "</a>";
@@ -266,6 +267,11 @@
   /* ---------- página de reforço ---------- */
   window.registrarReforco = function (dados) {
     if (pagina === "reforco" && dados) renderAula(dados, "Reforço");
+  };
+
+  /* ---------- página de resumo (resumo rápido para reler antes da prova) ---------- */
+  window.registrarResumo = function (dados) {
+    if (pagina === "resumo" && dados) renderAula(dados, "Resumo rápido");
   };
 
   function renderAula(dados, sobretitulo) {
@@ -483,6 +489,8 @@
     document.title = (TITULO_DA_PAGINA[pagina] || "Revisão") + " — " + disc.nome;
     if (pagina === "reforco" && !disc.reforco) {
       aviso("Sem reforço para esta disciplina", "A página de reforço existe apenas para Sistemas Digitais e Microprocessadores.");
+    } else if (pagina === "resumo" && !disc.resumo) {
+      aviso("Sem resumo para esta disciplina", "A página de resumo existe apenas para Projeto de Software.");
     } else {
       carregarConteudo(ARQUIVO_DA_PAGINA[pagina] || "revisao");
     }

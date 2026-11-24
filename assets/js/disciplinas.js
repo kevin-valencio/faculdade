@@ -10,6 +10,7 @@ window.DISCIPLINAS = {
     sigla: "ps",
     nome: "Projeto de Software",
     nomeCompleto: "Projeto de Software",
+    resumo: true,
     descricao: "Fundamentos de projeto de software, agilidade e Scrum, gestão de riscos, qualidade e documentação, gerência de configuração e mudanças, UX, governança e ferramentas."
   },
   sdm: {
@@ -23,4 +24,4 @@ window.DISCIPLINAS = {
 window.ORDEM_DISCIPLINAS = ["fia", "ps", "sdm"];
 
 /* Versão usada para forçar o navegador a baixar arquivos novos após cada atualização. */
-window.VERSAO = "20261124-1";
+window.VERSAO = "20261124-2";

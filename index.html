@@ -13,7 +13,7 @@
   <link rel="icon" href="assets/img/icone.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/icone-180.png">
   <title>Revisão para Provas</title>
-  <link rel="stylesheet" href="assets/css/estilo.css?v=20261124-1">
+  <link rel="stylesheet" href="assets/css/estilo.css?v=20261124-2">
 </head>
 <body class="pagina-inicial">
   <main class="inicio">
@@ -24,7 +24,7 @@
     </header>
     <section id="cards" class="cards" aria-label="Disciplinas"></section>
   </main>
-  <script src="assets/js/disciplinas.js?v=20261124-1"></script>
+  <script src="assets/js/disciplinas.js?v=20261124-2"></script>
   <script>
     (function () {
       var box = document.getElementById("cards");
@@ -42,6 +42,7 @@
           '<a class="botao secundario" href="atividades.html?d=' + s + '">Atividades</a>' +
           '<a class="botao secundario" href="topicos.html?d=' + s + '">Tópicos</a>' +
           (d.reforco ? '<a class="botao secundario" href="reforco.html?d=' + s + '">Reforço</a>' : '') +
+          (d.resumo ? '<a class="botao secundario" href="resumo.html?d=' + s + '">Resumo</a>' : '') +
           '</div>';
         box.appendChild(card);
       });

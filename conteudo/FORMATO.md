@@ -139,3 +139,9 @@ registrarAtividades({
 | `<ul>`, `<ol>`, `<strong>`, `<em>`, `<code>`, `<img>` | Normais. |
 
 Não use `<h1>`–`<h3>` (reservados ao layout), estilos inline, scripts ou CSS próprios.
+
+## 4. Resumo rápido (somente PS)
+
+Arquivo `conteudo/ps/resumo.js`, chamando `registrarResumo({ disciplina, visaoGeral, fontes, modulos })`,
+com a mesma estrutura de `registrarRevisao` (módulos e tópicos, mesmos componentes). Abre em `resumo.html?d=ps`
+(aba "Resumo", habilitada por `resumo: true` em `disciplinas.js`). Tópicos curtos, para releitura antes da prova.
